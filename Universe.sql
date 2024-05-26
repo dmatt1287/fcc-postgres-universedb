@@ -51,7 +51,7 @@ CREATE TABLE public.galaxy (
     galaxy_id integer NOT NULL,
     speed integer,
     description text,
-    name character varying(255)
+    name character varying(255) NOT NULL
 );
 
 
@@ -80,47 +80,15 @@ ALTER SEQUENCE public.galaxy_galaxy_id_seq OWNED BY public.galaxy.galaxy_id;
 
 
 --
--- Name: moon; Type: TABLE; Schema: public; Owner: freecodecamp
---
-
-CREATE TABLE public.moon (
-    moon_id integer NOT NULL,
-    name character varying(255)
-);
-
-
-ALTER TABLE public.moon OWNER TO freecodecamp;
-
---
--- Name: moon_moon_id_seq; Type: SEQUENCE; Schema: public; Owner: freecodecamp
---
-
-CREATE SEQUENCE public.moon_moon_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.moon_moon_id_seq OWNER TO freecodecamp;
-
---
--- Name: moon_moon_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: freecodecamp
---
-
-ALTER SEQUENCE public.moon_moon_id_seq OWNED BY public.moon.moon_id;
-
-
---
 -- Name: planet; Type: TABLE; Schema: public; Owner: freecodecamp
 --
 
 CREATE TABLE public.planet (
     planet_id integer NOT NULL,
-    supports_life boolean,
-    name character varying(255)
+    name character varying(255) NOT NULL,
+    amount_of_people numeric,
+    time_travel boolean DEFAULT false NOT NULL,
+    star_id integer NOT NULL
 );
 
 
@@ -157,7 +125,8 @@ CREATE TABLE public.star (
     size integer,
     radius integer NOT NULL,
     color character varying(255) NOT NULL,
-    name character varying(255)
+    name character varying(255) NOT NULL,
+    galaxy_id integer
 );
 
 
@@ -193,13 +162,6 @@ ALTER TABLE ONLY public.galaxy ALTER COLUMN galaxy_id SET DEFAULT nextval('publi
 
 
 --
--- Name: moon moon_id; Type: DEFAULT; Schema: public; Owner: freecodecamp
---
-
-ALTER TABLE ONLY public.moon ALTER COLUMN moon_id SET DEFAULT nextval('public.moon_moon_id_seq'::regclass);
-
-
---
 -- Name: planet planet_id; Type: DEFAULT; Schema: public; Owner: freecodecamp
 --
 
@@ -215,12 +177,6 @@ ALTER TABLE ONLY public.star ALTER COLUMN star_id SET DEFAULT nextval('public.st
 
 --
 -- Data for Name: galaxy; Type: TABLE DATA; Schema: public; Owner: freecodecamp
---
-
-
-
---
--- Data for Name: moon; Type: TABLE DATA; Schema: public; Owner: freecodecamp
 --
 
 
@@ -242,13 +198,6 @@ ALTER TABLE ONLY public.star ALTER COLUMN star_id SET DEFAULT nextval('public.st
 --
 
 SELECT pg_catalog.setval('public.galaxy_galaxy_id_seq', 1, false);
-
-
---
--- Name: moon_moon_id_seq; Type: SEQUENCE SET; Schema: public; Owner: freecodecamp
---
-
-SELECT pg_catalog.setval('public.moon_moon_id_seq', 1, false);
 
 
 --
@@ -274,14 +223,6 @@ ALTER TABLE ONLY public.galaxy
 
 
 --
--- Name: moon moon_pkey; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
---
-
-ALTER TABLE ONLY public.moon
-    ADD CONSTRAINT moon_pkey PRIMARY KEY (moon_id);
-
-
---
 -- Name: planet planet_pkey; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
 --
 
@@ -295,6 +236,22 @@ ALTER TABLE ONLY public.planet
 
 ALTER TABLE ONLY public.star
     ADD CONSTRAINT star_pkey PRIMARY KEY (star_id);
+
+
+--
+-- Name: star fk_galaxy; Type: FK CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.star
+    ADD CONSTRAINT fk_galaxy FOREIGN KEY (galaxy_id) REFERENCES public.galaxy(galaxy_id);
+
+
+--
+-- Name: planet fk_star; Type: FK CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.planet
+    ADD CONSTRAINT fk_star FOREIGN KEY (star_id) REFERENCES public.star(star_id);
 
 
 --
